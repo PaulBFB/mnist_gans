@@ -1,0 +1,207 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.0 Transitional//EN">
+<html>
+<head>
+	<meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+	<title></title>
+	<meta name="generator" content="LibreOffice 6.0.7.3 (Linux)"/>
+	<meta name="author" content="Matthias"/>
+	<meta name="created" content="2020-05-16T21:14:00"/>
+	<meta name="changed" content="2020-05-17T21:32:56.858432415"/>
+	<meta name="AppVersion" content="16.0000"/>
+	<meta name="DocSecurity" content="0"/>
+	<meta name="HyperlinksChanged" content="false"/>
+	<meta name="LinksUpToDate" content="false"/>
+	<meta name="ScaleCrop" content="false"/>
+	<meta name="ShareDoc" content="false"/>
+	<style type="text/css">
+		@page { size: 8.27in 11.69in; margin-left: 0.98in; margin-right: 0.98in; margin-top: 0.98in; margin-bottom: 0.79in }
+		p { margin-bottom: 0.1in; direction: ltr; color: #000000; line-height: 115%; text-align: left; orphans: 2; widows: 2 }
+		p.western { font-family: "Calibri", serif; font-size: 11pt; so-language: de-DE }
+		p.cjk { font-family: "Calibri"; font-size: 11pt; so-language: en-US }
+		p.ctl { font-family: ; font-size: 11pt; so-language: ar-SA }
+		a:link { color: #0000ff }
+	</style>
+</head>
+<body lang="de-DE" text="#000000" link="#0000ff" dir="ltr">
+<p class="western" align="center" style="margin-bottom: 0.11in; line-height: 108%">
+<font face="Times New Roman, serif"><font size="4" style="font-size: 14pt"><span lang="en-GB"><b><span style="background: #ffffff">Generative
+Adversarial Networks</span></b></span></font></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB"><span style="background: #ffffff">What
+are GANs? Generative Adversarial Networks consist of two artificial
+neural networks (sub-models) that compete in zero-sum game: a
+generator model and discriminator model. GANs are applicable broadly
+and used to, among other things, to create photo-realistic images for
+the visualization, to model motion patterns, to create 3D models of
+objects from 2D images and to process astronomical images.  GANs are
+also used to naturally design user interaction with chatbots. GANs
+are also used in particle physics to accelerate time-consuming
+detector simulations.</span></span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB"><span style="background: #ffffff">To
+understand the difference and the interplay between the two
+sub-models, we first consider discriminative models.</span></span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">Discriminator
+models usually refers to modelling a classification problem, with the
+purpose to find a discriminant function that maps a given input onto
+a specific class. A classic example is spam </span></font><font face="Times New Roman, serif"><span lang="en-GB">detection:
+what is the probability that a given e-mail is spam (y) considering
+all words in that e-mail (x) </span></font><font face="Times New Roman, serif"><span lang="en-GB"></span></font><font face="Times New Roman, serif"><span lang="en-GB">
+</span></font><font face="Times New Roman, serif"><span lang="en-GB"><span style="background: #f9f2f4">p(y|x)</span></span></font><font face="Times New Roman, serif"><span lang="en-GB">.
+This constitutes a supervised learning approach, that fundamentally
+aims to find the boundary between classes.</span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB"><span style="background: #ffffff">Generative
+modelling on the other hand falls into the category of unsupervised
+learning within the machine learning domain, and aims to discover
+patterns within a given data set to then generate output that mimics
+the underlying data. Considering the spam detection example again, a
+generative approach would be as follows: (1) assume a given e-mail in
+span; (2) what is the probability of seeing these words (relevant for
+spam detection) in a particular e-mail.  Expressed in statistical
+terms, a generative approach models the joint probability of an
+observable variable and the target variable. </span></span></font>
+</p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">Generally,
+a GAN architecture combines these two approaches where the generative
+model first creates (generates) new data from a vector of latent
+variables to the desired result spa</span></font><font face="Times New Roman, serif"><span lang="en-GB">ce.
+The generators’ aim is to learn to generate results based on a
+given data distribution to ultimately generate output that is
+indistinguishable from the ground truth. The discriminator, on the
+other hand is trained to distinguish the results of the generator
+from the (fake) data from the real data and labels the generators’
+output accordingly. In this constellation, the discriminator provides
+feedback to the generator while simultaneously receiving feedback
+from the ground truth, the underlying data.</span></font></p>
+<p lang="en-GB" class="western" style="margin-bottom: 0.11in; line-height: 108%">
+<br/>
+<br/>
+
+</p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><img src="Generative%20Adversarial%20Networks_html_b6b17371e40c7e50.png" name="Grafik 2" align="bottom" width="605" height="258" border="0"/>
+</p>
+<p lang="en-GB" class="western" style="margin-bottom: 0.11in; line-height: 108%">
+<br/>
+<br/>
+
+</p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">The
+two models are organized such that they compete in a zero-sum game (a
+concept rooted in game theory, where gains and losses cancel each
+other out, resulting in zero), hence the term “adversarial”. For
+instance, the discriminator can be a convolutional network for binary
+classification, say images. The generator, in a sense, can be seen as
+an inverse convolutional network that takes random data to produce
+images. Both models aim to optimize their opposing loss function. The
+result is a natural (Nash) equilibrium, where the generator produces
+output that is classified as real 50% of times. Through this
+combination of models, a unsupervised learning approach is
+transformed to a supervised approach. The following analogy describes
+this area of tension.</span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%">„<font face="Times New Roman, serif"><span lang="en-GB"><i>We
+can think of the generator as being like a counterfeiter, trying to
+make fake money, and the discriminator as being like police, trying
+to allow legitimate money and catch counterfeit money. To succeed in
+this game, the counterfeiter must learn to make money that is
+indistinguishable from genuine money, and the generator network must
+learn to create samples that are drawn from the same distribution as
+the training data.“</i></span></font></p>
+<p lang="en-GB" class="western" style="margin-bottom: 0.11in; line-height: 108%">
+<br/>
+<br/>
+
+</p>
+<p lang="en-GB" class="western" style="margin-bottom: 0.11in; line-height: 108%">
+<br/>
+<br/>
+
+</p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><img src="Generative%20Adversarial%20Networks_html_2526c9de95dd133f.png" name="Grafik 1" align="bottom" width="605" height="278" border="0"/>
+</p>
+<p lang="en-GB" class="western" style="margin-bottom: 0.11in; line-height: 108%">
+<br/>
+<br/>
+
+</p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB"><b>GAN
+Variations</b></span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">There
+exists a myriad GAN variations and evolutions as can be seen in the
+following table: </span></font>
+</p>
+<p class="western" align="center" style="margin-bottom: 0.11in; line-height: 108%">
+<img src="Generative%20Adversarial%20Networks_html_9c6e50e255d13307.png" name="Grafik 3" align="bottom" width="337" height="341" border="0"/>
+</p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">However,
+a good starting point for image-synthesis-based is </span></font><font face="Times New Roman, serif"><span lang="en-GB"><span style="background: #ffffff">Deep
+Convolutional GANs (DCGAN), based on </span></span></font><font face="Times New Roman, serif"><span lang="en-GB">Radfort
+et al’s groundbreaking work, that condenses to five best practice
+points guideline points when designing an DCGAN:</span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">Architecture
+guidelines for stable Deep Convolutional GANs</span></font></p>
+<ol>
+	<li/>
+<p style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">The
+	authors suggest to replace “…deterministic spatial pooling
+	functions (such as maxpooling) with strided convolutions…“ in
+	order to allow the convolutional network its own spatial down
+	sampling. </span></font>
+	</p>
+	<li/>
+<p style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">Further
+	it is recommended to use flattened layers that are directly connect
+	to the output layer (instead of fully connected layers) in the
+	discriminator model, as this yield more model stability and leads to
+	faster convergence. The first layer, then, could be seen as fully
+	connected to the output layer </span></font>
+	</p>
+	<li/>
+<p style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">Normalizing
+	each input unit to have zero mean and variance (batch normalization)
+	further stabilizes the learning process, since this supports
+	gradient flow and initialization. Note, however, batch normalization
+	should not be applied to the generator’s output layers and the
+	discriminator’s input layers, due to arising problems of model
+	fluctuations and instability.</span></font></p>
+	<li/>
+<p style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">Furhter,
+	 Radfort et al found that using ReLU activation results in faster
+	learning rates in the domain of image classification, when used in
+	the generator model (all layers except the output layer where Tanh
+	function should be used). </span></font>
+	</p>
+	<li/>
+<p style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">A
+	leaky rectified activation should be used in the gernerator.</span></font></p>
+</ol>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">In
+our analysis we use  binary cross entropy as loss fuction, since GAN
+can be seen as a game of two players A and B that compete towards the
+same objective. Thus, both A and B need to be optimized in order to
+reach equilibrium.   </span></font>
+</p>
+<p lang="en-GB" class="western" style="margin-bottom: 0.11in; line-height: 108%">
+<br/>
+<br/>
+
+</p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">_____________________________________________________</span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB"><b>Sources:</b></span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">Unsupervised
+Representation Learning with Deep Convolutional Generative
+Adversarial Networks</span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">NIPS
+2016 Tutorial: Generative Adversarial Networks</span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">https://en.wikipedia.org/wiki/Generative_model</span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">https://www.freecodecamp.org/news/an-intuitive-introduction-to-generative-adversarial-networks-gans-7a2264a81394/</span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">https://pathmind.com/wiki/generative-adversarial-network-gan</span></font></p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><font face="Times New Roman, serif"><span lang="en-GB">https://towardsdatascience.com/gan-objective-functions-gans-and-their-variations-ad77340bce3c</span></font></p>
+<p lang="en-GB" class="western" style="margin-bottom: 0.11in; line-height: 108%">
+<br/>
+<br/>
+
+</p>
+<p class="western" style="margin-bottom: 0.11in; line-height: 108%"><br/>
+<br/>
+
+</p>
+</body>
+</html>

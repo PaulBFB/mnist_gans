@@ -10,7 +10,7 @@ from keras.utils.vis_utils import plot_model
 from keras.datasets.mnist import load_data
 
 
-def generate_true_sample(data: np.array,
+def generate_true_sample(data: np.ndarray,
                          number_samples: int) -> (np.ndarray, np.ndarray):
     # random point
     random_index = randint(0, data.shape[0], number_samples)
@@ -139,6 +139,57 @@ class GenerativeAdversarialNetwork:
         y = np.zeros((number_samples, 1))
         return x, y
 
+    def summarize_performance(self,
+                              epoch: int,
+                              number_samples=100):
+        # prepare real samples
+        true_x, true_y = generate_true_sample(self.mnist_x_, number_samples)
+        # evaluate discriminator on real examples
+        _, acc_real = self.discriminator_.evaluate(true_x, true_y, verbose=0)
+        # prepare fake examples
+        fake_x, fake_y = self.generate_fake_samples(number_samples)
+        # evaluate discriminator on fake examples
+        _, accuracy_fake = self.discriminator_.evaluate(fake_x, fake_y, verbose=0)
+        # summarize discriminator performance
+        print(f'>Accuracy real: {round(acc_real * 100, 2)}, fake: {round(accuracy_fake * 100, 2)}')
+        # save generated images
+        plot_generated_images(fake_x, epoch)
+        # save the generator model
+        filename = f'./model_checkpoints/generator_model_epoch_{epoch + 1}.h5'
+        self.generator_.save(filename)
+
+    def train(self,
+              n_epochs: int = 100,
+              n_batch: int = 256):
+
+        # set batch size / epoch
+        batches_per_epoch = int(self.mnist_x_.shape[0] / n_batch)
+        half_batch = int(n_batch / 2)
+
+        # manually enumerate epochs
+        for epoch in range(n_epochs):
+            # enumerate batches over the training set
+            for batch in range(batches_per_epoch):
+                # get randomly selected samples
+                real_x, real_y = generate_true_sample(self.mnist_x_, half_batch)
+                # generate fake samples
+                fake_x, fake_y = self.generate_fake_samples(half_batch)
+                # create training set for the discriminator from real + fake
+                x, y = np.vstack((real_x, fake_x)), np.vstack((real_y, fake_y))
+                # update discriminator model weights
+                d_loss, _ = self.discriminator_.train_on_batch(x, y)
+                # prepare points in latent space as input for the generator
+                gan_x = self.generate_latent_points(n_batch)
+                # create inverted labels for the fake samples
+                gan_y = np.ones((n_batch, 1))
+                # update the generator via the discriminator's error
+                g_loss = self.gan_.train_on_batch(gan_x, gan_y)
+                # print loss for batch
+                print(f'> epoch: {epoch + 1}, batch {batch + 1}/{batches_per_epoch}, loss_disc: {round(d_loss, 3)}, loss_gen: {round(g_loss, 3)}')
+            # every 10 epochs, show performance + checkpoint
+            if (epoch + 1) % 10 == 0:
+                self.summarize_performance(epoch)
+
 
 if __name__ == '__main__':
     test = GenerativeAdversarialNetwork()
@@ -150,3 +201,4 @@ if __name__ == '__main__':
 #    test.show_gan()
 #    print(test.generate_latent_points(1))
 #    print(test.generate_fake_samples(1))
+    test.summarize_performance(1)

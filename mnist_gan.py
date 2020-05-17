@@ -1,7 +1,5 @@
-import logging
 import numpy as np
 import matplotlib.pyplot as plt
-from datetime import datetime, timedelta
 from numpy.random import randn, randint
 from keras.layers import Dense, Reshape, Flatten, Conv2D, Conv2DTranspose, LeakyReLU, Dropout
 from keras.models import Sequential
@@ -12,10 +10,16 @@ from keras.datasets.mnist import load_data
 
 def generate_true_sample(data: np.ndarray,
                          number_samples: int) -> (np.ndarray, np.ndarray):
+    """
+    generate samples from the true dataset as input to the discriminator
+    :param data: dataset to pull from
+    :param number_samples: samples to create
+    :return: ndarray of samples
+    """
     # random point
     random_index = randint(0, data.shape[0], number_samples)
     image = data[random_index]
-    # set lables to 1 (real)
+    # set labels to 1 (real)
     label = np.ones((number_samples, 1))
     return image, label
 
@@ -23,6 +27,13 @@ def generate_true_sample(data: np.ndarray,
 def plot_generated_images(images,
                           epoch: int,
                           n: int = 10):
+    """
+    save output of the generator to image folder in square subplots
+    :param images: images to be saved
+    :param epoch: epoch number, used in filename
+    :param n: number of samples to be saved in a grid
+    :return: None
+    """
     for i in range(n ** 2):
         # subplot
         plt.subplot(n, n, 1 + i)
@@ -30,7 +41,7 @@ def plot_generated_images(images,
         # plot raw pixel data
         plt.imshow(images[i, :, :, 0], cmap='gray_r')
     # save plot to file
-    filename = f'generated_images_epoch{epoch}.png'
+    filename = f'.img/generated_images_epoch_{epoch}.png'
     plt.savefig(filename)
     plt.close()
 
@@ -39,6 +50,11 @@ class GenerativeAdversarialNetwork:
     def __init__(self,
                  image_dimensions=(28, 28, 1),
                  latent_dim: int = 100):
+        """
+        create GAN object - initialize & compile generator + discriminator, load mnist data + prepare
+        :param image_dimensions: input dimensions of the images
+        :param latent_dim: size of the latent space (arbitrary)
+        """
 
         self.latent_dim = latent_dim
         # create discriminator model
@@ -94,35 +110,64 @@ class GenerativeAdversarialNetwork:
         self.mnist_x_ = x
 
     def plot_discriminator(self):
+        """
+        save discriminator model architecture to img folder
+        :return: None
+        """
         plot_model(self.discriminator_,
                    to_file='./img/discriminator_architecture.png',
                    show_shapes=True,
                    show_layer_names=True)
 
     def plot_generator(self):
+        """
+        save generator model architecture to img folder
+        :return: None
+        """
         plot_model(self.generator_,
                    to_file='./img/generator_architecture.png',
                    show_shapes=True,
                    show_layer_names=True)
 
     def plot_gan(self):
+        """
+        save GAN model architecture to img folder
+        :return:
+        """
         plot_model(self.gan_,
                    to_file='./img/GAN_architecture.png',
                    show_shapes=True,
                    show_layer_names=True)
 
     def show_generator(self):
+        """
+        show summary of generator model architecture / layers
+        :return: None
+        """
         self.generator_.summary()
 
     def show_discriminator(self):
+        """
+        show summary of discriminator model architecture / layers
+        :return: None
+        """
         self.discriminator_.summary()
 
     def show_gan(self):
+        """
+        show summary of GAN model architecture / layers
+        :return: None
+        """
         self.gan_.summary()
 
     # generate points in latent space as generator input
     def generate_latent_points(self,
                                number_samples: int) -> np.ndarray:
+        """
+        create points in the latent space as input for the generator
+        :param number_samples: number of samples to create
+        :return: ndarray of inputs
+        """
 
         x_input = randn(self.latent_dim * number_samples)
         # reshape for the network
@@ -131,7 +176,11 @@ class GenerativeAdversarialNetwork:
 
     def generate_fake_samples(self,
                               number_samples) -> (np.ndarray, np.ndarray):
-
+        """
+        create fake samples through the generator
+        :param number_samples: amount of samples to generate
+        :return: tuple of ndarrays (samples and labels)
+        """
         x_input = self.generate_latent_points(number_samples)
         # predict outputs
         x = self.generator_.predict(x_input)
@@ -142,6 +191,12 @@ class GenerativeAdversarialNetwork:
     def summarize_performance(self,
                               epoch: int,
                               number_samples=100):
+        """
+        show current accuracy of the model, save current generator configuration into the models_checkpoints folder
+        :param epoch: current epoch, used in filename
+        :param number_samples: number of samples to use
+        :return: None
+        """
         # prepare real samples
         true_x, true_y = generate_true_sample(self.mnist_x_, number_samples)
         # evaluate discriminator on real examples
@@ -151,7 +206,7 @@ class GenerativeAdversarialNetwork:
         # evaluate discriminator on fake examples
         _, accuracy_fake = self.discriminator_.evaluate(fake_x, fake_y, verbose=0)
         # summarize discriminator performance
-        print(f'>Accuracy real: {round(acc_real * 100, 2)}, fake: {round(accuracy_fake * 100, 2)}')
+        print(f'>Accuracy real: {(acc_real * 100):.2f}, fake: {(accuracy_fake * 100):.2f}')
         # save generated images
         plot_generated_images(fake_x, epoch)
         # save the generator model
@@ -161,7 +216,12 @@ class GenerativeAdversarialNetwork:
     def train(self,
               n_epochs: int = 100,
               n_batch: int = 256):
-
+        """
+        train the complete model for the set number of epochs (currently 100)
+        :param n_epochs: number of epochs
+        :param n_batch: batch size
+        :return: None
+        """
         # set batch size / epoch
         batches_per_epoch = int(self.mnist_x_.shape[0] / n_batch)
         half_batch = int(n_batch / 2)
@@ -185,7 +245,7 @@ class GenerativeAdversarialNetwork:
                 # update the generator via the discriminator's error
                 g_loss = self.gan_.train_on_batch(gan_x, gan_y)
                 # print loss for batch
-                print(f'> epoch: {epoch + 1}, batch {batch + 1}/{batches_per_epoch}, loss_disc: {round(d_loss, 3)}, loss_gen: {round(g_loss, 3)}')
+                print(f'> epoch: {epoch + 1}, batch {batch + 1}/{batches_per_epoch}, loss_disc: {d_loss:.3f}, loss_gen: {g_loss:.3f}')
             # every 10 epochs, show performance + checkpoint
             if (epoch + 1) % 10 == 0:
                 self.summarize_performance(epoch)
@@ -193,12 +253,10 @@ class GenerativeAdversarialNetwork:
 
 if __name__ == '__main__':
     test = GenerativeAdversarialNetwork()
-#    test.plot_gan()
-#    test.plot_discriminator()
-#    test.plot_generator()
-#    test.show_generator()
-#    test.show_discriminator()
-#    test.show_gan()
-#    print(test.generate_latent_points(1))
-#    print(test.generate_fake_samples(1))
-    test.summarize_performance(1)
+    test.plot_gan()
+    test.plot_discriminator()
+    test.plot_generator()
+    test.show_generator()
+    test.show_discriminator()
+    test.show_gan()
+    test.train()
